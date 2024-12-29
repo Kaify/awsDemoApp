@@ -26,8 +26,8 @@ def handle_register():
     profile_pic_url = None
     if profile_pic:
         s3 = boto3.client('s3')
-        s3.upload_fileobj(profile_pic, 'kaifytestapp', email)
-        profile_pic_url = f"https://kaifytestapp.s3.amazonaws.com/{email}"
+        s3.upload_fileobj(profile_pic, 'your S3 bucket Name', email)
+        profile_pic_url = f"https://<your s3 bucket name>.s3.amazonaws.com/{email}"
 
     # Save data in DynamoDB
     table.put_item(
