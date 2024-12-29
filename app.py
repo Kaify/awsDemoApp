@@ -1,12 +1,16 @@
+import os
 import bcrypt
 from flask import Flask, request, render_template, redirect, url_for
 import boto3
+
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+DYNAMODB_TABLE_NAME = os.getenv("DYNAMODB_TABLE_NAME")
 
 app = Flask(__name__, template_folder='webapp-frontend/templates')
 
 # DynamoDB Client
 dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('Users') # Here 'Users' is the name of the DynamoDB table I have created on AWS
+table = dynamodb.Table(DYNAMODB_TABLE_NAME) # Here 'Users' is the name of the DynamoDB table I have created on AWS
 
 @app.route('/')
 def register():
@@ -26,10 +30,10 @@ def handle_register():
     profile_pic_url = None
     if profile_pic:
         s3 = boto3.client('s3')
-        s3.upload_fileobj(profile_pic, 'your S3 bucket Name', email) # Again you would need to have an S3 bucket already created
+        s3.upload_fileobj(profile_pic, S3_BUCKET_NAME, email) # Again you would need to have an S3 bucket already created
         # Creating S3 bucket manually and then using it in your code gives intuitive understanding of connection between a service in AWS
         # and how it's consumed by the application you are creating. Like in this case to store Profile Picture
-        profile_pic_url = f"https://<your s3 bucket name>.s3.amazonaws.com/{email}"
+        profile_pic_url = f"https://{S3_BUCKET_NAME}.s3.amazonaws.com/{email}"
 
     # Save data in DynamoDB
     table.put_item(
